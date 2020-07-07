@@ -1,0 +1,10 @@
+time=            1.0d0
+time steps=      100
+b=               0.5d0 -2.0d0 1.0d0
+velocity=        5.0d0 0.7d0 -1.0d0
+position=        0.0d0 0.0d0 0.0d0
+mass=            1.0d0
+charge=          1.0d0
+accuracy=        1.0d-6
+end
+

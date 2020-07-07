@@ -1,0 +1,45 @@
+\documentclass[12pt,a4paper,oneside,openany]{report}
+
+\usepackage{verbatim}
+
+\setlength\paperwidth{210mm}
+\setlength\paperheight{297mm}
+\setlength\parindent{0mm}
+
+\setlength{\voffset}{-25.4mm}
+\setlength{\hoffset}{-25.4mm}
+
+\setlength{\topmargin}{20mm}
+\setlength{\oddsidemargin}{20mm}
+\setlength{\evensidemargin}{20mm}
+\setlength{\textwidth}{160mm}
+\setlength{\textheight}{247mm}
+
+\setlength\footskip{10mm}
+\setlength\headheight{0cm}
+\setlength\headsep{0cm}
+\pagestyle{plain}
+\pagenumbering{arabic}
+\parskip 5mm
+
+\newcommand{\fcode}[1]{\par file = \textbf{#1} \verbatiminput{example/#1}}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\SC}{\textbf{SC} }
+
+\begin{document}
+
+\section*{Parallel N-body assignment}
+
+In laboratory exercise 2, you wrote a simple N-body code to simulate $n$ particles in a box interacting via the coulomb force
+\begin{equation}
+F=\frac{q Q}{4\pi\epsilon_{0} \mathbf{r}^{2}}
+\end{equation}
+
+Expand this simple N-body code to run in parallel, using MPI.  Provide a brief discussion on how you parallelised the algorithm and why, generally, you wouldn't use this algorithm in practice.
+
+Please email me your code and the brief discussion, outlined above, to \code{stuart.midgley@anu.edu.au}.  Include all files and instructions on how to run your code.
+
+\textbf{Due 29 August}
+
+
+\end{document}

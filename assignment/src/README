@@ -1,0 +1,36 @@
+Parallel N-Body
+
+The parallel N-Body code distributes the N particles across the p
+processes, where each processor contains N/p particles.  The
+interaction between all the local particles is first computed and
+stored.  The positions of the particles are then passed around the
+processes in a ring fashion.  After each array of positions is passed
+to a neighbor, the interaction between the received and local
+particles is computed.  After passing the positions around to p
+neighbors, each local set of particles has completely interacted with
+all other particles, allowing the full interaction to be computed.
+
+This "ring" method is easy to implement and computes the full
+interaction between each particle and every other particle.  However,
+it has a very poor communication pattern.
+
+1) As the number of processes (p) is increased, the number of messages
+also increased, causing poor scaling (message passing is typically
+very slow).  In the extreme case, where N=p, a massive number of
+messages is passed for almost no computation.
+
+2) As the number of particles increases, the size of the messages
+increases, with an appropriate decrease in performance.
+
+3) A simple coloumb interaction involves very few computations for
+each particle.  Consequently, the amount of time spent in computation
+is small when compared to any communication which must occur.  For a
+more complicated interaction, the computational cost can be increased,
+hopefully with no increase in communication leading to greater
+efficiency.
+
+4) The ring code implements an all-particle interaction.  In reality,
+the coloumb force drops off as 1/r^2 so particles far away have almost
+no effect.  Utilising an algorithm with uses this localisation can
+lead to dramatic communication savings and decrease overall
+computation time.

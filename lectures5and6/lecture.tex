@@ -1,0 +1,198 @@
+\documentclass[12pt,a4paper,oneside,openany]{report}
+
+\usepackage{verbatim}
+\usepackage{epsfig}
+
+\setlength\paperwidth{210mm}
+\setlength\paperheight{297mm}
+\setlength\parindent{0mm}
+
+\setlength{\voffset}{-25.4mm}
+\setlength{\hoffset}{-25.4mm}
+
+\setlength{\topmargin}{20mm}
+\setlength{\oddsidemargin}{20mm}
+\setlength{\evensidemargin}{20mm}
+\setlength{\textwidth}{160mm}
+\setlength{\textheight}{247mm}
+
+\setlength\footskip{10mm}
+\setlength\headheight{0cm}
+\setlength\headsep{0cm}
+\pagestyle{plain}
+\pagenumbering{arabic}
+\parskip 5mm
+
+\newcommand{\fcode}[1]{\par \small file = \textbf{#1} \verbatiminput{example/#1} \normalsize}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\SC}{\textbf{SC} }
+\newcommand{\makefile}{\code{Makefile}}
+
+\begin{document}
+
+\section*{More MPI examples}
+There are many different ways MPI can be used to parallelise a problem.  The trivially parallel involve almost no communication, except for at the start and end to distribute work and then collect the results.  No communication is required during the running of the program.  Such parallel programs often use collective communication to push the initial information out and then to pull the final result in.
+
+The value of $\pi = 3.14159265359$ can be computed using the following integral
+\begin{equation}
+\pi = \int_{0}^{1} \frac{4}{1+x^{2}}\;dx
+\end{equation}
+with a serial version of the code being
+
+\fcode{src/serialpi.f90}
+
+Notice the use of $1.0\_dp$ to make sure $1$ is interpreted correctly and the abreviated \code{if} statement.
+
+Compiling and running the serial code
+\begin{verbatim}
+sc0> f90 -fast serialpi.f90 -o serialpi
+sc0> ./serialpi 
+Enter the number of intervals: (0 quits) 
+100000
+ pi is approximately  3.1415926535981 Error is  0.0000000000083
+Enter the number of intervals: (0 quits) 
+10000000
+ pi is approximately  3.1415926535898 Error is  0.0000000000000
+Enter the number of intervals: (0 quits) 
+0
+sc0> 
+\end{verbatim}
+
+\newpage
+
+The parallel version of this code is very simple and includes only the use of collective communications.
+
+\fcode{src/mpipi.f90}
+
+Every process in \code{MPI\_COMM\_WORLD} must take part in collective communications.  Every process will sit and wait until this has occured.
+
+Compiling and running the parallel code
+\begin{verbatim}
+sc0> f90 -fast mpipi.f90 -o mpipi -lmpi
+sc0> prun -n 4 ./mpipi
+Enter the number of intervals: (0 quits) 
+100000
+ pi is approximately  3.1415926535981 Error is  0.0000000000083
+Enter the number of intervals: (0 quits) 
+10000000
+ pi is approximately  3.1415926535898 Error is  0.0000000000000
+Enter the number of intervals: (0 quits) 
+0
+sc0> 
+\end{verbatim}
+
+What do you think the compiler flat \code{-fast} does?
+
+\newpage
+
+The use of extensive communication during the computation process distinguishes a real parallel job from the trivially parallel job.  Such computer codes make use of high performance super computers such as the \SC which have special networks and hardware to make such programs run well.  As an example, consider the laplace equation
+\begin{equation}
+\nabla^{2} u = 0
+\end{equation}
+with a serial version of the code being
+
+\fcode{src/seriallaplace.f90}
+
+Notice how the arrays $u$ and $unew$ are defined so as to have different ranges and also how they are initialised.
+
+Compiling and running the serial code
+\begin{verbatim}
+sc0> f90 -fast seriallaplace.f90 -o seriallaplace
+sc0> ./seriallaplace 
+ Iteration          100 , error =    53.4471619335965     
+ Iteration          200 , error =    36.8855595092387     
+ Iteration          300 , error =    29.5396365360539     
+ Iteration          400 , error =    25.1585720389280     
+ Iteration          500 , error =    22.1680459957814     
+ Iteration          600 , error =    19.9601882365086     
+ Iteration          700 , error =    18.2440590012490     
+ Iteration          800 , error =    16.8606192739112     
+ Iteration          900 , error =    15.7146278113500     
+ Iteration         1000 , error =    14.7451077372352     
+sc0> 
+\end{verbatim}
+
+\newpage
+
+To distribute these arrays across $n$ processors requires a ``slab'' decomposition.
+
+\fcode{src/mpilaplace.f90}
+
+\newpage
+
+Compiling and running the parallel code
+\begin{verbatim}
+sc0> f90 -fast mpilaplace.f90 -o mpilaplace -lmpi
+sc0> prun -n 4 ./mpilaplace
+ Iteration          100 , error =    53.4471619335964     
+ Iteration          200 , error =    36.8855594609273     
+ Iteration          300 , error =    29.5396339687446     
+ Iteration          400 , error =    25.1585551008231     
+ Iteration          500 , error =    22.1679960513792     
+ Iteration          600 , error =    19.9600887453752     
+ Iteration          700 , error =    18.2438997665307     
+ Iteration          800 , error =    16.8603963090278     
+ Iteration          900 , error =    15.7143416500720     
+ Iteration         1000 , error =    14.7447617007717     
+sc0> 
+\end{verbatim}
+
+\newpage
+
+\section*{N-body code}
+
+\fcode{src/nbody.f90}
+
+Compiling and running the N-body code
+\begin{verbatim}
+sc0> f90 -fast nbody.f90 -o nbody
+sc0> /usr/bin/time ./nbody 
+  2.300817560736747E-018
+  2.300816535849909E-018
+  2.300816357189022E-018
+  2.300816282865615E-018
+  2.300816255406225E-018
+  2.300816242766784E-018
+  2.300816238288725E-018
+  2.300816236761038E-018
+  2.300816235520899E-018
+  2.300816234545460E-018
+
+real   5.6
+user   5.5
+sys    0.0
+sc0> 
+\end{verbatim}
+
+\newpage
+
+\section*{N-body abstraction}
+A version of the N-body code which utilised heavy data abstraction
+
+\fcode{src/nbody.abstract.f90}
+
+Compiling and running the N-body code
+\begin{verbatim}
+sc0> f90 -fast nbody.abstract.f90 -o nbody.abstract
+sc0> /usr/bin/time ./nbody.abstract 
+  2.300817560736748E-018
+  2.300816529207251E-018
+  2.300816359939625E-018
+  2.300816286977051E-018
+  2.300816251131971E-018
+  2.300816240927980E-018
+  2.300816236951865E-018
+  2.300816235131360E-018
+  2.300816233604450E-018
+  2.300816233354569E-018
+
+real   13.8
+user   13.7
+sys    0.0
+sc0> 
+\end{verbatim}
+
+What's the difference?  Well, look at the times to run.
+
+
+\end{document}

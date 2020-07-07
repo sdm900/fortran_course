@@ -1,0 +1,35 @@
+ZGEEV(l)	     LAPACK driver routine (version 2.0)	     ZGEEV(l)
+
+
+
+NAME
+  ZGEEV - compute for an N-by-N complex nonsymmetric matrix A, the eigen-
+  values and, optionally, the left and/or right eigenvectors
+
+SYNOPSIS
+
+  SUBROUTINE ZGEEV( JOBVL, JOBVR, N, A, LDA, W, VL, LDVL, VR, LDVR, WORK,
+		    LWORK, RWORK, INFO )
+
+      CHARACTER	    JOBVL, JOBVR
+
+      INTEGER	    INFO, LDA, LDVL, LDVR, LWORK, N
+
+      DOUBLE	    PRECISION RWORK( * )
+
+      COMPLEX*16    A( LDA, * ), VL( LDVL, * ), VR( LDVR, * ), W( * ), WORK(
+		    * )
+
+PURPOSE
+  ZGEEV computes for an N-by-N complex nonsymmetric matrix A, the eigenvalues
+  and, optionally, the left and/or right eigenvectors.
+
+  The right eigenvector v(j) of A satisfies
+		   A * v(j) = lambda(j) * v(j)
+  where lambda(j) is its eigenvalue.
+  The left eigenvector u(j) of A satisfies
+		u(j)**H * A = lambda(j) * u(j)**H
+  where u(j)**H denotes the conjugate transpose of u(j).
+
+  The computed eigenvectors are normalized to have Euclidean norm equal to 1
+  and largest component real.

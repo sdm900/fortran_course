@@ -1,0 +1,300 @@
+\documentclass[12pt,a4paper,oneside,openany]{report}
+
+\usepackage{verbatim}
+
+\setlength\paperwidth{210mm}
+\setlength\paperheight{297mm}
+\setlength\parindent{0mm}
+
+\setlength{\voffset}{-25.4mm}
+\setlength{\hoffset}{-25.4mm}
+
+\setlength{\topmargin}{20mm}
+\setlength{\oddsidemargin}{20mm}
+\setlength{\evensidemargin}{20mm}
+\setlength{\textwidth}{160mm}
+\setlength{\textheight}{247mm}
+
+\setlength\footskip{10mm}
+\setlength\headheight{0cm}
+\setlength\headsep{0cm}
+\pagestyle{plain}
+\pagenumbering{arabic}
+\parskip 5mm
+
+\newcommand{\fcode}[1]{\par file = \textbf{#1} \verbatiminput{example/#1}}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\SC}{\textbf{SC} }
+
+\begin{document}
+
+\section*{Me (Stu)}
+
+\hspace{2cm}\begin{minipage}{10cm}
+Stuart Midgley \\
+\code{stuart.midgley@anu.edu.au} \\
+6125 5988\\
+Office 321 \\
+ANU Supercomputer Facility\\
+Leonard Huxley Building 56
+\end{minipage}
+
+Honours at the Australian National University in Theoretical Physics.
+
+PhD at the University of Western Australia in Theoretical and Computational Physics.
+
+\section*{Fortran}
+
+Fortran is a high level language aimed at numerical calculations, mainly in the scientific community.  Its structure, commands and included features have evolved over the last $30$ to $40$ years into a sophisticated language.  Most of the constructs within Fortran are designed to aid the computational programmer develop models quickly and easily while hiding most of the complications of other languages (eg. C and C++).
+
+Recommended text:
+
+\ \hspace{1cm}
+\begin{tabular}[t]{ll}
+\textbf{Fortran 90 Explained} & Michael Metcalf and John Reid \\
+ & Oxford Science Publications \\
+\textbf{Fortran 90/95 Explained} & Michael Metcalf and John Reid \\
+ & Second Edition \\
+ & Oxford University Press
+\end{tabular}
+
+Good internet resources
+\begin{itemize}
+\item \code{http://www.fortran.com} contains a FAQ and loads of other information.
+\item \code{news://comp.lang.fortran} speak directly to the people who develop fortran: James Giles; Greg Lindahl, Steve Lionel and Richard Maine (note, they get a bit narky at assignment-type questions).
+\end{itemize}
+
+This course will mostly deal with Fortran90/95 with references to earlier version as required, namely Fortran77.  The Fortran90/95 standard is completely backward compatible with earlier version.
+
+Fortran2000 is on its way.
+
+\newpage
+
+\section*{Getting started}
+
+Following is the most basic program possible
+\fcode{firstprogram.f90}
+
+This can be compiled with \code{f90 firstprogram.f90 -o firstprogram} to produce the program \textbf{firstprogram} which can be executed via \code{./firstprogram}.  As you might expect, no output arises.  The \code{implicit none} statement tells the Fortran compiler to assume that all variables will be declared and to flag an error if a variable isn't declared (good programming practice).
+
+Fortran allows variables to be defined which will hold certain values within your program.  Variables can be of the following types:
+\begin{itemize}
+\item \code{LOGICAL}
+\item \code{CHARACTER}
+\item \code{INTEGER}
+\item \code{REAL}
+\item \code{COMPLEX}
+\item user constructed
+\end{itemize}
+which can have varying representations.  For example, by default on the \SC the declarations \code{real :: a} or \code{real(4) :: a} or \code{real*4 :: a} define a \textit{single precision} real variable \code{a}.  The term \textit{single precision} for a real variables means that the representation in memory is only $4$ bytes long.  The declarations \code{real(8) :: a} or \code{real*8 :: a} define a \textit{double precision} real variable \code{a} (which consumes $8$ bytes in memory).  Similarly for integers and complex.
+
+\newpage
+
+\fcode{variables.f90}
+
+This program can be compiled with \code{f90 variables.f90 -o variables} and executed with \code{./variables}, producing
+
+\newpage
+
+\begin{verbatim}
+sc0: > f90 variables.f90 -o variables
+sc0: > ./variables
+ Huge:   2147483647  32767  2147483647   9223372036854775807
+ Digits:           31          15          31          63
+ 
+ Huge:   3.4028235E+38  3.4028235E+38  1.797693134862316E+308
+Digits:           24          24          53
+Epsilon:  0.1192093E-06  0.1192093E-06   0.2220446049250313E-15
+Epsilon: 119.2092896E-09119.2092896E-09 222.0446049250313081E-18
+ Epsilon:   1.1920929E-07  1.1920929E-07   2.2204460492503131E-16
+  Epsilon:   0.1192092896E-0006  0.1192092896E-0006  0.2220446049E-0015
+sc0: > 
+\end{verbatim}
+
+Note how the output is presented and how this relates to the \code{write} statements.
+\begin{itemize}
+\item \code{*} is a special character meaning standard or default
+\item \code{a} represents \code{ASCII} characters
+\item \code{i} represents integers
+\item \code{e} represents exponential notation
+\item \code{es} represents scientific notation (similar to \code{e})
+\item \code{en} represents engineering notation
+\item and lots more
+\end{itemize}
+The \code{write}, \code{huge}, \code{epsilon} and \code{digits} represent intrinsic function within the fortran language and are defined in the standard (see Fortran 90/95 Explained).  The variable declarations need to occur in a block at the top of the program block, before any computational code.
+
+\newpage
+
+The previous example highlights the difference between various types and representations.  To do something useful, consider the following program
+\fcode{integration1.f90}
+
+\newpage
+
+\begin{verbatim}
+sc0: > f90 integration1.f90 -o integration1
+sc0: > ./integration1
+Integration value =   -0.8493277816E+001
+sc0: > cat integration1.dat
+  0.000000000000000E+000
+   6.65665629953549     
+   7.17943729964769     
+   .
+   .
+   .
+  -6.85059866994883     
+  -8.11583656377644     
+  -8.49327781610877     
+sc0: >
+\end{verbatim}
+
+This code initialises a few variables, open a file for writing output to, does a very simple integration of a $\sin(x+y)$ function, closes the file and then displays the result on the terminal screen.  Note the construction of a \code{do} loop and how an integer is converted to a double precision real.
+
+Often within a piece of code, you may wish to re-use some of it in various places.  It seems a little silly to continually write out the same piece of code and then have to make a heap of small changes later on when you want to slightly change your model.  Through the use of functions and subroutines, you can give a piece of code a name and a method for accessing it.  This allows you to \textit{call} the code at any stage with in your program.
+\fcode{userfunc.f90}
+
+\newpage
+
+\fcode{integration2.f90}
+
+\newpage
+
+\begin{verbatim}
+sc0: > f90 userfunc.f90 integration2.f90 -o integration2
+sc0: > ./integration2
+Integration value =   -0.8493277816E+001
+sc0: > cat integration2.dat
+  0.000000000000000E+000  0.000000000000000E+000  0.000000000000000E+000
+  0.000000000000000E+000  0.000000000000000E+000  0.000000000000000E+000
+  0.000000000000000E+000  0.000000000000000E+000  0.000000000000000E+000
+  .                       .                       .
+  .                       .                       .
+  .                       .                       .
+  0.000000000000000E+000  0.000000000000000E+000  0.000000000000000E+000
+  0.000000000000000E+000  0.000000000000000E+000  0.000000000000000E+000
+  0.000000000000000E+000
+  0.948984619355586     
+  0.997494986604054     
+  0.983985946873937     
+  .
+  .
+  .
+ -0.536572918000435     
+ -0.311119354981127     
+ -6.632189735120068E-002
+sc0: > 
+\end{verbatim}
+
+Here the actual function to integrate is in a separate file (\code{userfunc.f90}) and called into the main integration loop with appropriate information supplied to allow the function to be evaluated.  The result is returned to the main loop and added to the summation.
+
+Here \code{userfunc(x, y)} is known as an external program.  In a sense, it is outside your program and can be compiled separately and linked into your program.  You can have a function and subroutines which are more closely tied to your program, allowing greater freedon, the compiler more freedom to optimise and bug check your code.  This higher level of integration is achieved through modules and allow many subroutines and function to be grouped together.  Sharing of variables and information is also possible
+
+\newpage
+
+\fcode{usermodule1.f90}
+
+\newpage
+
+\fcode{integration3.f90}
+
+\newpage
+
+\begin{verbatim}
+sc0: > f90 usermodule1.f90 integration3.f90 -o integration3
+sc0: > ./integration3
+Integration value =    0.1005904831E+003
+sc0: >
+\end{verbatim}
+
+The definition of a module allows global variables to be defined.  That is, if you define a variable at the top of a module, it is avaliable to every program/function/subroutine which has access to that module.  That way, you can define something like
+\fcode{globalmodule.f90}
+\fcode{global.f90}
+
+\newpage
+
+\begin{verbatim}
+sc0: > f90 globalmodule.f90 global.f90 -o global
+sc0:fortran_course/exmaple > ./global
+   3.14159265359000        3.14159265359000
+sc0: >
+\end{verbatim}
+
+Often in Fortran77 you will see the use of \textit{common blocks} which tell the compiler that certain variables use the same memory location throughout any program or subprogram where the common block is defined.  This feature is being removed gradually from fortran and not recommended for use (use modules instead).  You might see
+\begin{verbatim}
+real*8 a, b, c
+COMMON /globals/ a, b, c
+\end{verbatim}
+at the top of each program or subprogram.  OR it will enter the program through a line like \code{include 'global.h'}, where global.h has the common block definition.
+
+\newpage
+
+So, we have seen how a function works.  Lets have a look at a subroutine.
+\fcode{usermodule2.f90}
+\fcode{integration4.f90}
+
+\begin{verbatim}
+sc0: > f90 usermodule2.f90 integration4.f90 -o integration4
+sc0: > ./integration4
+sc0: > cat integration4.dat
+ Integration value =   -4893.97485760126     
+ x-range:       1.00000000000000       <= x <=    5.00000000000000     
+ y-range:      -5.00000000000000       <= y <=    5.00000000000000     
+ Final x and y:       5.00999999999994        5.01999999999996     
+sc0: >
+\end{verbatim}
+
+As you can see, modules are basically the same as functions, except any values are returned through the arguments.  It is also important to note, with the increased use of modules, the main program contains less and less code and becomes more and more readable.
+
+\newpage
+
+The simplest way to perform many common complex tasks is to use code that has already been written.  On the internet and the \SC you will find many packages already installed.  Visit our software page \code{http://nf.apac.edu.au/facilities/sc/software} to see the list of installed packages.  The following code finds the eigen values and vectors of a random complex $2$-dimensional matrix using a library out of the \textit{Compaq Extended Math Library} (cxml).  To find out more about this function do a \code{man dxml} or \code{man lapack} or \code{man zgeev}.
+\fcode{zgeev.man}
+
+\newpage
+
+\fcode{eigen.f90}
+
+\begin{verbatim}
+sc: > f90 eigen.f90 -o eigen -lcxml
+sc: > ./eigen
+10 10
+ Return status:            0
+ (5.56553618733719,5.09695297331658) (0.388491476032440,1.11911259292683)
+ (1.03746976224658,0.634022856265214) (-0.524058088309954,0.374935211344387)
+ (0.758442863019523,0.134491460784339) (0.879687590358565,-0.231015206854573)
+ (0.281636064452862,-0.805392734388889) (-0.341460149801809,-0.495970455629106)
+ (-0.768794161979881,-0.569273440267898) (-0.592198627369591,-0.713696832253872)
+sc: >
+\end{verbatim}
+
+\newpage
+
+\section*{Fortran77}
+
+Fortran77 differs from Fortran90 in a number of ways:
+\begin{itemize}
+\item Strict form code (not free-form)
+\item No module structure
+\item No run-time memory allocation
+\item Common blocks
+\item No concept of a pointer
+\item No derived types
+\item No operator overloading
+\item No array syntax
+\end{itemize}
+
+Fortran90 is considerable more advanced than Fortran77 but the basic structure and syntax remains intact between versions.  Most code is still written in Fortran77, so you need to be able to understand it and modify code as required.
+
+\newpage
+
+\section*{Exercise}
+
+The force on a particle due to a magnetic field is given by
+\begin{equation}
+\tilde{F} = q\;\tilde{v}\;\times\;\tilde{B}
+\end{equation}
+
+If a particle with charge $q$ and mass $m$ is moving in the $x$-$y$ plane with magnetic field $\tilde{B} = (0, 0, b)$, only in the $z$- direction, the motion of the electron stays in the $x$-$y$ plane.  By using the Newtonian equations of motion, the velocity and position of the particle can be determined, some small time later.
+
+Write a Fortran program to model the motion of the particle, reading the initial position and velocity in the $x$-$y$ plane, time to propagate for, time step, mass and magnetic field strength from an input file.  The program should output to several files the position and velocity of the particle (at suitable times) which can then be plotted using IDL, Matlab or Mathematica.
+
+\end{document}

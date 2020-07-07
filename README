@@ -1,0 +1,10 @@
+A 6 lecture fortran course.
+
+A real tour'd'force of fortran, mpi and some mathematical techniques.
+
+Codes include:
+    Integration
+    Pi
+    Laplace
+    N-Body (serial and parallel)
+
